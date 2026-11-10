@@ -58,8 +58,37 @@ class ValidationTests(unittest.TestCase):
 
     def test_new_failure_and_affected_old_failure_block(self):
         after=dict(errors=['https://changed.example'],excluded=[])
-        self.assertFalse(checks.compare_links(dict(errors=[]),after,[])['passed'])
+        self.assertFalse(checks.compare_links(dict(errors=[]),after,after['errors'])['passed'])
         self.assertFalse(checks.compare_links(dict(errors=after['errors']),after,after['errors'])['passed'])
+
+    def test_unrelated_remote_fluctuation_is_diagnostic(self):
+        after=dict(errors=['https://unrelated.example'],excluded=[],successful=['https://changed.example'])
+        result=checks.compare_links(dict(errors=[]),after,['https://changed.example'])
+        self.assertTrue(result['passed'])
+        self.assertEqual(result['unrelatedFluctuations'],['https://unrelated.example/'])
+        self.assertEqual(result['introduced'],[])
+
+    def test_changed_companion_failure_still_blocks(self):
+        after=dict(errors=['https://companion.example'],excluded=[],successful=['https://changed.example'])
+        result=checks.compare_links(dict(errors=[]),after,['https://changed.example','https://companion.example'])
+        self.assertFalse(result['passed'])
+        self.assertEqual(result['unrelatedFluctuations'],[])
+
+    def test_new_non_http_errors_still_block(self):
+        for url in ['file://CATALOG/missing.md','missing.md','custom://missing']:
+            with self.subTest(url=url):
+                after=dict(errors=[url],excluded=[],successful=['https://changed.example'])
+                result=checks.compare_links(dict(errors=[]),after,['https://changed.example'])
+                self.assertFalse(result['passed'])
+                self.assertEqual(result['unrelatedFluctuations'],[])
+
+    def test_changed_row_matching_another_section_still_checks_destination(self):
+        before = '# A\n- [Item](https://old.example) - Tool.\n# B\n- [Item](https://new.example) - Tool.\n'
+        after = before.replace('https://old.example', 'https://new.example')
+        relevant = checks.changed_urls(before, after)
+        self.assertIn('https://new.example', relevant)
+        checked = dict(errors=['https://new.example'], excluded=[], successful=[])
+        self.assertFalse(checks.compare_links(dict(errors=[]), checked, relevant)['passed'])
 
     def test_ignored_destination_is_not_a_pass(self):
         self.assertFalse(checks.compare_links(dict(errors=[]),dict(errors=[],excluded=['https://changed.example']),['https://changed.example'])['passed'])
