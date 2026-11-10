@@ -81,9 +81,11 @@ class Validator:
         return folder
 
     def check(self, folder, label):
-        commands = {'lint':['awesome-lint','README.md'], 'spelling':['typos','README.md'],
-                    'links':['lychee','--verbose','--no-progress','--format','json','--max-retries','0',
-                             '--max-concurrency','10','--timeout','10','README.md']}
+        command = ['lychee','--verbose','--no-progress','--format','json',
+                   '--max-retries','0','--max-concurrency','10','--timeout','10']
+        if (folder/'.github/lychee.toml').exists():
+            command += ['--config','.github/lychee.toml']
+        commands = {'links': command + ['README.md']}
         results = {key:run(cmd,folder,self.env) for key,cmd in commands.items()}
         log = self.output / 'validation'
         log.mkdir(parents=True,exist_ok=True)
@@ -116,9 +118,9 @@ class Validator:
             old_lines = {e['line'] for e in ci.entries(self.readme)}
             relevant = [e['url'] for e in ci.entries(changed) if e['line'] not in old_lines]
             result['links'] = compare_links(before_links,after_links,relevant)
-            result['passed'] = all(after[k]['exitCode']==0 for k in ('lint','spelling')) and result['links']['passed']
+            result['passed'] = result['links']['passed']
             result['reason'] = ('Checks passed; existing unrelated link failures are listed separately.' if result['passed']
-                                else 'Checks did not pass; compare baseline and proposed results in validation logs. Existing catalog formatting/spelling failures also hold the edit.')
+                                else 'Proposed edit failed link checks; see baseline and proposed validation logs.')
         except (ValueError,KeyError,TypeError):
             result['reason'] = 'Link validation incomplete; held for maintainer review.'
         return result

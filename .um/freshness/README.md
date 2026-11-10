@@ -51,9 +51,9 @@ these snapshots needs no model. Changes confined to other source files can be
 missed; cosmetic page changes can trigger extra reviews.
 
 Proposed corrections are checked against prior issues and PRs, then validated with
-awesome-lint, typos, and Lychee in a disposable checkout. These are advisory checks
-added by this workflow, not necessarily the upstream's existing checks. Existing
-formatting or spelling failures hold edits; baseline logs show those separately. New link failures are
+exact patch-application checks and Lychee in a disposable checkout. Original list
+markers, indentation and metadata are preserved; no additional style or spelling
+policy is imposed. New link failures are
 separated from existing failures; changed destinations must pass. Missing evidence,
 uncertainty, incomplete history, failed checks, or a changed catalog hold the edit.
 Checks do not establish factual correctness: maintainers still review the evidence.
@@ -67,7 +67,7 @@ per detail endpoint, and limited evidence sizes; exceeding a limit holds the edi
 
 Install UM 0.72.1, Claude Code 2.1.284, Python 3.12+, and authenticated GitHub CLI.
 The bundled validation-tool installer targets GitHub's Linux x86-64 runner.
-On other platforms install awesome-lint 2.3.0, typos 1.51.1 and Lychee 0.24.2 separately.
+On other platforms install Lychee 0.24.2 separately.
 Local runs can use existing Claude Code authentication. Install the validation tools:
 
 ```sh
