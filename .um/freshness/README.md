@@ -32,7 +32,7 @@ flowchart TD
   investigateEntries --> collectHistory[Collect prior discussions]
   collectHistory --> reviewHistory[Review discussions for proposed changes]
   reviewHistory --> buildCorrections[Build proposed corrections]
-  buildCorrections --> validateCorrections[Check formatting, spelling and links]
+  buildCorrections --> validateCorrections[Check exact patch and links]
   validateCorrections --> renderPreview[Report, checked patches and proposed baseline]
 ```
 
@@ -43,7 +43,7 @@ Only supported keep decisions with stable snapshots become completed reviews.
 After accepting a correction, the corrected entry must be reviewed before it can
 join the baseline. Adding or moving other entries does not invalidate a review.
 
-Source snapshots watch repository identity, description, archive status, default
+Source snapshots cover every inline linked source on each catalog row. They watch repository identity, description, archive status, default
 branch, READMEs, Markdown under `docs/`, and package manifests throughout GitHub
 repositories. Crates.io entries also watch crate metadata and the linked GitHub
 repository. Other sites use their final URL and page hash. Fetching and comparing
@@ -73,7 +73,7 @@ Local runs can use existing Claude Code authentication. Install the validation t
 ```sh
 bash .um/freshness/checks/install.sh
 um workflow run --source-root .um/freshness --execution-root . \
-  --run-dir /tmp/ratatui-review-unique --json \
+  --run-dir /tmp/awesome-deno-review-unique --json \
   .um/freshness/workflow.yaml
 ```
 
