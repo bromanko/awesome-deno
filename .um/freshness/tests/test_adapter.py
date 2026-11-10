@@ -51,3 +51,7 @@ class AdapterTests(unittest.TestCase):
         from unittest.mock import patch
         with patch.object(catalog,'single_snapshot',side_effect=[dict(complete=True,fingerprint='a',source={}),dict(complete=False,error='Unavailable')]):
             self.assertFalse(catalog.snapshot(dict(url='https://a.example',sourceUrls=['https://a.example','https://b.example']))['complete'])
+
+    def test_blank_before_children_and_complex_rename_held(self):
+        self.assertEqual(self.proposal('- [Talk](https://example.com)\n\n  - [Slides](https://other.example)\n',action='remove',newUrl=None),[])
+        self.assertEqual(self.proposal('* Tool: [iOS](https://example.com), [Android](https://other.example)\n',newName='New Project'),[])

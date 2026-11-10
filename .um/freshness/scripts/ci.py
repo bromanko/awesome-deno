@@ -56,9 +56,9 @@ def entries(readme):
                            sourceUrls=list(dict.fromkeys(m[2] for m in LINK.finditer(line)))))
     source_lines = readme.splitlines()
     for entry in result:
-        following = int(entry['id'])
-        entry['hasChildren'] = (following < len(source_lines) and bool(source_lines[following].strip()) and
-                                len(source_lines[following]) - len(source_lines[following].lstrip()) >
+        following = next((line for line in source_lines[int(entry['id']):] if line.strip()), '')
+        entry['hasChildren'] = (bool(following) and
+                                len(following) - len(following.lstrip()) >
                                 len(entry['line']) - len(entry['line'].lstrip()))
     if not result:
         raise ValueError('No catalog entries found')
@@ -191,7 +191,7 @@ def previews(data, raw, status):
             peers = [e for e in entries(readme) if e['section'] == entry['section'] and e['id'] != entry['id']]
             if name != entry['name'] and name.casefold() in [e['name'].casefold() for e in peers]:
                 raise ValueError('Rename would duplicate an entry name')
-            if row['newDescription'] and entry.get('complexEntry'):
+            if (row['newDescription'] or row['newName']) and entry.get('complexEntry'):
                 held += 1
                 continue
             separator = entry.get('separator', ' - ')
