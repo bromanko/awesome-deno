@@ -55,3 +55,7 @@ class AdapterTests(unittest.TestCase):
     def test_blank_before_children_and_complex_rename_held(self):
         self.assertEqual(self.proposal('- [Talk](https://example.com)\n\n  - [Slides](https://other.example)\n',action='remove',newUrl=None),[])
         self.assertEqual(self.proposal('* Tool: [iOS](https://example.com), [Android](https://other.example)\n',newName='New Project'),[])
+
+    def test_description_link_is_in_required_destinations(self):
+        row=ci.entries('- [Tool](https://example.com) - See [guide](https://guide.example).')[0]
+        self.assertEqual(row['sourceUrls'],['https://example.com','https://guide.example'])
