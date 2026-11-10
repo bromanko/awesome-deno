@@ -68,7 +68,7 @@ def run(stage):
                        evidence=[dict(url='https://example.com',observation='Synthetic evidence, not live research.')],
                        limitations=[], blockers=[], newName=None,newUrl=None,newDescription=None) for e in batch['entries']]
             if data.get('fixtureMode') == 'correction' and rows[0]['id'] == data['entries'][0]['id']:
-                rows[0].update(action='update',newDescription=data['entries'][0]['description']+' Synthetic fixture.')
+                rows[0].update(action='update',newDescription=(data['entries'][0]['description']+' Synthetic fixture.').strip())
             return dict(results=rows), dict(entryIds=[r['id'] for r in rows],usage=[])
         assessment, receipt = research.investigate(catalog.research_packet(data), runner=runner)
         stages.save('fixture-assessment.json', assessment)
